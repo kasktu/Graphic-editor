@@ -1,29 +1,15 @@
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import { Tool } from './tool';
 import app from '../index';
-var CreationTool = /** @class */ (function (_super) {
-    __extends(CreationTool, _super);
-    function CreationTool() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
+export class CreationTool extends Tool {
     // Template Method
-    CreationTool.prototype.processMouseUp = function () {
+    processMouseUp(fig) {
+        // 0. no empty figures
+        var name = this.getName();
+        if (name != 'TextCreationTool' && this.equal(this.evDown, this.evUp)) {
+            return;
+        }
         // 1. create figure
-        var f = this.createFigure();
+        const f = this.createFigure(fig);
         // 2. check figure
         if (f) {
             // 3. add figure to the drawing
@@ -32,8 +18,6 @@ var CreationTool = /** @class */ (function (_super) {
         else {
             console.error('FIGURE CREATION FAILED');
         }
-    };
-    return CreationTool;
-}(Tool));
-export { CreationTool };
+    }
+}
 //# sourceMappingURL=creation-tool.js.map

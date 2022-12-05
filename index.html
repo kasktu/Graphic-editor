@@ -1,20 +1,228 @@
 <!doctype html>
 
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>Graphics Editor</title>
-        <link rel="icon" type="image/png" href="ungrid.png?v=6">
-        <style>
-            html, body, canvas {
-                border: 0;
-                margin: 0;
-                padding: 0;
-            }
-        </style>
-    </head>
-    
-    <body>
-        <script src="./dist/bundle.js"></script>
-    </body>
+<head>
+    <meta charset="utf-8">
+    <title>Graphics Editor</title>
+    <link rel="icon" type="image/png" href="ungrid.png?v=14">
+    <link rel="stylesheet" href="node_modules/xel/themes/macos.css">
+    <style>
+        html,
+        body,
+        canvas {
+            border: 0;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <script src="node_modules/xel/xel.min.js"></script>
+</head>
+
+<body>
+    <div id="content"></div>
+
+    <div id="menubar">
+        <x-menubar>
+            <x-menuitem>
+                <x-label>File</x-label>
+
+                <x-menu>
+                    <x-menuitem id="new">
+                        <x-label>New</x-label>
+                        <x-shortcut value="Control+N"></x-shortcut>
+                    </x-menuitem>
+
+                    <x-menuitem id="open">
+                        <x-label>Open...</x-label>
+                        <x-shortcut value="Control+O"></x-shortcut>
+                    </x-menuitem>
+
+                    <x-menuitem id="open-recent">
+                        <x-label>Open recent</x-label>
+
+                        <x-menu>
+                            <x-menuitem id="Doc_1">
+                                <x-label id="Cont_Doc1"> </x-label>
+                            </x-menuitem>
+
+                            <x-menuitem id="Doc_2">
+                                <x-label id="Cont_Doc2"> </x-label>
+                            </x-menuitem>
+
+                            <x-menuitem id="Doc_3">
+                                <x-label id="Cont_Doc3"> </x-label>
+                            </x-menuitem>
+                        </x-menu>
+                    </x-menuitem>
+
+                    <hr>
+
+                    <x-menuitem id="save">
+                        <x-label>Save</x-label>
+                        <x-shortcut value="Control+S"></x-shortcut>
+                    </x-menuitem>
+
+                    <x-menuitem id="saveas">
+                        <x-label>Save as...</x-label>
+                        <x-shortcut value="Control+Shift+S"></x-shortcut>
+                    </x-menuitem>
+
+                    <hr>
+
+                    <x-menuitem id="quit">
+                        <x-label>Quit</x-label>
+                        <x-shortcut value="Control+Q"></x-shortcut>
+                    </x-menuitem>
+                </x-menu>
+            </x-menuitem>
+
+            <x-menuitem>
+                <x-label>Edit</x-label>
+
+                <x-menu>
+                    <x-menuitem>
+                        <x-icon name="undo"></x-icon>
+                        <x-label>Undo</x-label>
+                        <x-shortcut value="Control+Z"></x-shortcut>
+                    </x-menuitem>
+
+                    <x-menuitem>
+                        <x-icon name="redo"></x-icon>
+                        <x-label>Redo</x-label>
+                        <x-shortcut value="Control+Shift+Z"></x-shortcut>
+                    </x-menuitem>
+
+                    <hr>
+
+                    <x-menuitem id="cut">
+                        <x-icon name="content-cut"></x-icon>
+                        <x-label>Cut</x-label>
+                        <x-shortcut value="Control+X"></x-shortcut>
+                    </x-menuitem>
+
+                    <x-menuitem id="copy">
+                        <x-icon name="content-copy"></x-icon>
+                        <x-label>Copy</x-label>
+                        <x-shortcut value="Control+C"></x-shortcut>
+                    </x-menuitem>
+
+                    <x-menuitem id="paste">
+                        <x-icon name="content-paste"></x-icon>
+                        <x-label>Paste</x-label>
+                        <x-shortcut value="Control+V"></x-shortcut>
+                    </x-menuitem>
+                    <x-menuitem id="group">
+                        <x-icon name="content-group"></x-icon>
+                        <x-label>Group</x-label>
+                        <x-shortcut value="Control+H"></x-shortcut>
+                    </x-menuitem>
+                    <x-menuitem id="ungroup">
+                        <x-icon name="content-group"></x-icon>
+                        <x-label>UnGroup</x-label>
+                        <x-shortcut value="Control+Shift+H"></x-shortcut>
+                    </x-menuitem>
+
+                    <hr>
+
+                    <x-menuitem>
+                        <x-icon name="send"></x-icon>
+                        <x-label>Web clipboard</x-label>
+
+                        <x-menu>
+                            <x-menuitem>
+                                <x-icon name="content-copy"></x-icon>
+                                <x-label>Copy selection to web clipboard</x-label>
+                            </x-menuitem>
+
+                            <hr>
+
+                            <x-menuitem>
+                                <x-icon></x-icon>
+                                <x-label>Web clipboard help</x-label>
+                            </x-menuitem>
+                        </x-menu>
+                    </x-menuitem>
+
+                    <hr>
+
+                    <x-menuitem>
+                        <x-icon></x-icon>
+                        <x-label>Select all</x-label>
+                        <x-shortcut value="Control+A"></x-shortcut>
+                    </x-menuitem>
+
+                    <x-menuitem>
+                        <x-icon></x-icon>
+                        <x-label>Select none</x-label>
+                        <x-shortcut value="Control+Shift+A"></x-shortcut>
+                    </x-menuitem>
+                </x-menu>
+            </x-menuitem>
+
+            <x-menuitem>
+                <x-label>Tool</x-label>
+
+                <x-menu>
+                    <x-menuitem id="line" togglable>
+                        <x-label>Line</x-label>
+                        <x-shortcut value="L"></x-shortcut>
+                    </x-menuitem>
+
+                    <x-menuitem id="rect" togglable>
+                        <x-label>Rectangle</x-label>
+                        <x-shortcut value="R"></x-shortcut>
+                    </x-menuitem>
+
+                    <x-menuitem id="elli" togglable>
+                        <x-label>Ellipse</x-label>
+                        <x-shortcut value="E"></x-shortcut>
+                    </x-menuitem>
+
+                    <x-menuitem id="text" togglable>
+                        <x-label>Text</x-label>
+                        <x-shortcut value="T"></x-shortcut>
+                    </x-menuitem>
+
+                    <hr>
+
+                    <x-menuitem id="sele" togglable>
+                        <x-icon name="select-all"></x-icon>
+                        <x-label>Selection</x-label>
+                        <x-shortcut value="S"></x-shortcut>
+                    </x-menuitem>
+                </x-menu>
+            </x-menuitem>
+
+            <x-menuitem>
+                <x-label>Test</x-label>
+
+                <x-menu>
+                    <x-menuitem id="test">
+                        <x-icon name="format-bold"></x-icon>
+                        <x-label>Back End</x-label>
+                    </x-menuitem>
+                    <x-menuitem id="list">
+                        <x-icon name="format-align-justify"></x-icon>
+                        <x-label>List Drawings</x-label>
+                    </x-menuitem>
+                </x-menu>
+
+            </x-menuitem>
+
+            <x-menuitem>
+                <x-label>Help</x-label>
+
+                <x-menu>
+                    <x-menuitem id="about">
+                        <x-icon name="help"></x-icon>
+                        <x-label>About</x-label>
+                    </x-menuitem>
+                </x-menu>
+            </x-menuitem>
+        </x-menubar>
+    </div>
+
+    <script src="./dist/bundle.js"></script>
+
+</body>
 </html>

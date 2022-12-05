@@ -1,104 +1,103 @@
-import { Cardinal, ControlPoint } from './control-point';
+import { ControlPoint } from './control-point';
 import { ColorHelper } from '../util/color-helper';
-var BoundBox = /** @class */ (function () {
+export class BoundBox {
     // public interface -------------------------------
-    function BoundBox(position, size) {
+    constructor(position, size) {
         this.position = position;
         this.size = size;
-        // non-public members -----------------------------
-        this.ctrlPoints = [];
-        this.addControlPoints();
     }
-    BoundBox.prototype.paint = function (ctx) {
+    paint(ctx) {
         // draw bound box
         ctx.strokeStyle = BoundBox.color;
         ctx.beginPath();
         ctx.rect(this.position.x, this.position.y, this.size.w, this.size.h);
         ctx.stroke();
-        // draw control points
-        this.ctrlPoints.forEach(function (cp) { return cp.paint(ctx); });
-    };
-    Object.defineProperty(BoundBox.prototype, "x", {
-        get: function () {
-            return this.position.x;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(BoundBox.prototype, "y", {
-        get: function () {
-            return this.position.y;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(BoundBox.prototype, "w", {
-        get: function () {
-            return this.size.w;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(BoundBox.prototype, "h", {
-        get: function () {
-            return this.size.h;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    // NEW
-    BoundBox.prototype.select = function (evDown, evUp) {
+    }
+    get x() {
+        return this.position.x;
+    }
+    get y() {
+        return this.position.y;
+    }
+    get w() {
+        return this.size.w;
+    }
+    get h() {
+        return this.size.h;
+    }
+    select(evDown, evUp) {
         if (evUp) {
             // bound box selection
             return this.contained(evDown, evUp);
         }
         // point selection
         return this.contains(evDown);
-    };
-    BoundBox.prototype.addControlPoints = function () {
-        // target = ES2017+
-        // Object.values(
-        //     Cardinal
-        // )
-        // .map( (cardinal: Cardinal) =>
-        //     this.ctrlPoints
-        //         .push(
-        //             new ControlPoint(
-        //                 this,
-        //                 cardinal
-        //             )
-        //         )
-        // );
-        var _this = this;
-        // target = ES5
-        Object.keys(Cardinal)
-            .map(function (key) {
-            var cardinal = Number(key);
-            if (!isNaN(cardinal)) {
-                _this.ctrlPoints
-                    .push(new ControlPoint(_this, cardinal));
-            }
-        });
-    };
-    BoundBox.prototype.contains = function (ev) {
-        var left = this.x;
-        var right = this.x + this.w;
-        var top = this.y;
-        var bottom = this.y + this.h;
-        return left < ev.clientX && ev.clientX < right
-            && top < ev.clientY && ev.clientY < bottom;
-    };
+    }
+    contains(ev) {
+        const left = this.x - ControlPoint.HSIZE;
+        const right = this.x + this.w + ControlPoint.HSIZE;
+        const top = this.y - ControlPoint.HSIZE;
+        const bottom = this.y + this.h + ControlPoint.HSIZE;
+        return left <= ev.offsetX && ev.offsetX <= right
+            && top <= ev.offsetY && ev.offsetY <= bottom;
+    }
+    move(dx, dy) {
+        this.position.x += dx;
+        this.position.y += dy;
+    }
+    // NEW
+    moveTo(x, y) {
+        this.position.x = x;
+        this.position.y = y;
+    }
+    resize(dx, dy, x, y) {
+        if (x) {
+            this.size.w += dx;
+        }
+        else if (!x) {
+            this.position.x += dx;
+            this.size.w -= dx;
+        }
+        if (y) {
+            this.size.h += dy;
+        }
+        else if (!y) {
+            this.position.y += dy;
+            this.size.h -= dy;
+        }
+    }
+    // non-public members -----------------------------
     // TODO
-    BoundBox.prototype.contained = function (evDown, evUp) {
+    contained(evDown, evUp) {
+        var minX, minY, maxX, maxY;
+        if (evDown.clientX > evUp.clientX) {
+            minX = evUp.clientX;
+            maxX = evDown.clientX;
+        }
+        else {
+            minX = evDown.clientX;
+            maxX = evUp.clientX;
+        }
+        if (evDown.clientY > evUp.clientY) {
+            minY = evUp.clientY;
+            maxY = evDown.clientY;
+        }
+        else {
+            minY = evDown.clientY;
+            maxY = evUp.clientY;
+        }
+        if (minX < this.x && (this.x + this.w) < maxX) {
+            if (minY < this.y && (this.y + this.h) < maxY) {
+                return true;
+            }
+        }
         return false;
-    };
-    BoundBox.color = ColorHelper.colorAsString({
-        r: 28,
-        g: 116,
-        b: 232,
-        a: 255,
-    });
-    return BoundBox;
-}());
-export { BoundBox };
+    }
+}
+BoundBox.color = ColorHelper.colorAsString({
+    r: 28,
+    g: 116,
+    b: 232,
+    a: 255,
+});
 //# sourceMappingURL=bound-box.js.map

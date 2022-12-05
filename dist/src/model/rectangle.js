@@ -1,26 +1,27 @@
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
+import { BoundBox, } from './bound-box';
 import { ColorHelper, } from '../util/color-helper';
 import { ClosedFigure, } from './closed-figure';
-var Rectangle = /** @class */ (function (_super) {
-    __extends(Rectangle, _super);
-    function Rectangle(bbox, lineThickness, lineStyle, lineStroke, fillColor, lineDash) {
-        return _super.call(this, bbox, lineThickness, lineStyle, lineStroke, fillColor, lineDash) || this;
+import { ApiService } from '../api/api-service';
+export class Rectangle extends ClosedFigure {
+    constructor(bbox, lineThickness, lineStyle, lineStroke, fillColor, lineDash) {
+        super(bbox, lineThickness, lineStyle, lineStroke, fillColor, lineDash);
     }
-    Rectangle.prototype.doPaint = function (ctx) {
+    get name() {
+        return Rectangle.className;
+    }
+    get _lineWidth() {
+        return this.lineThickness;
+    }
+    set _lineWidth(newTickness) {
+        this.lineThickness = newTickness;
+    }
+    get _lineStyle() {
+        return this._lineStyle;
+    }
+    set _lineStyle(newStyle) {
+        this._lineStyle = newStyle;
+    }
+    doPaint(ctx) {
         ctx.strokeStyle = ColorHelper.colorAsString(this.lineStroke);
         ctx.lineWidth = this.lineThickness;
         ctx.beginPath();
@@ -31,8 +32,20 @@ var Rectangle = /** @class */ (function (_super) {
             ctx.fillStyle = ColorHelper.colorAsString(this.fillColor);
             ctx.fill();
         }
-    };
-    return Rectangle;
-}(ClosedFigure));
-export { Rectangle };
+    }
+}
+Rectangle.className = 'Rectangle';
+class RectangleFactory {
+    create(json) {
+        return new Rectangle(new BoundBox({
+            x: json.bbox.x,
+            y: json.bbox.y
+        }, {
+            w: json.bbox.w,
+            h: json.bbox.h
+        }), 1, json.LineStyle, json.LineStroke, json.color, []);
+    }
+}
+ApiService.getInstance()
+    .registerFactory(Rectangle.className, new RectangleFactory());
 //# sourceMappingURL=rectangle.js.map

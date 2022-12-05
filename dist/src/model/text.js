@@ -1,62 +1,41 @@
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
+import { BoundBox } from './bound-box';
 import { ColorHelper } from '../util/color-helper';
 import { Figure } from './figure';
-var Text = /** @class */ (function (_super) {
-    __extends(Text, _super);
-    function Text(text, bbox, // NEW
+import { ApiService } from '../api/api-service';
+export class Text extends Figure {
+    constructor(text, bbox, // NEW
     LineStyle, LineStroke) {
-        var _this = _super.call(this, bbox, LineStyle, LineStroke) || this;
-        _this._font = "";
-        _this._text = _this.text;
-        _this._selected = false;
-        _this._text = text;
-        return _this;
+        super(bbox, LineStyle, LineStroke);
+        this.bbox = bbox;
+        this.LineStyle = LineStyle;
+        this.LineStroke = LineStroke;
+        this._font = "";
+        this._text = this.text;
+        this._selected = false;
+        this._text = text;
     }
-    Object.defineProperty(Text.prototype, "font", {
-        get: function () {
-            return this._font;
-        },
-        set: function (newFont) {
-            this._font = newFont;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(Text.prototype, "selected", {
-        get: function () {
-            return this._selected;
-        },
-        set: function (s) {
-            this._selected = s;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(Text.prototype, "text", {
-        get: function () {
-            return this._text;
-        },
-        set: function (newText) {
-            this._text = newText;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Text.prototype.doPaint = function (ctx) {
+    get name() {
+        return Text.className;
+    }
+    get font() {
+        return this._font;
+    }
+    set font(newFont) {
+        this._font = newFont;
+    }
+    get selected() {
+        return this._selected;
+    }
+    set selected(s) {
+        this._selected = s;
+    }
+    get text() {
+        return this._text;
+    }
+    set text(newText) {
+        this._text = newText;
+    }
+    doPaint(ctx) {
         ctx.font = this._font;
         ctx.fillStyle = ColorHelper.colorAsString(this.LineStyle);
         ctx.fillText(this._text, this.bbox.x, this.bbox.y);
@@ -64,8 +43,20 @@ var Text = /** @class */ (function (_super) {
             this.bbox.paint(ctx);
         }
         ctx.stroke();
-    };
-    return Text;
-}(Figure));
-export { Text };
+    }
+}
+Text.className = 'Text';
+class TextFactory {
+    create(json) {
+        return new Text(json._text, new BoundBox({
+            x: json.bbox.x,
+            y: json.bbox.y
+        }, {
+            w: json.bbox.w,
+            h: json.bbox.h
+        }), json.LineStyle, json.LineStroke);
+    }
+}
+ApiService.getInstance()
+    .registerFactory(Text.className, new TextFactory());
 //# sourceMappingURL=text.js.map

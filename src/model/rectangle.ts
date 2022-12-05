@@ -10,11 +10,15 @@ import {
 import { 
     ClosedFigure,
 } from './closed-figure';
+import { Factory } from './figure';
+import { ApiService } from '../api/api-service';
 
 export class Rectangle extends ClosedFigure {
 
+    static readonly className: string = 'Rectangle';
+
     constructor(
-        bbox: BoundBox,
+        bbox:BoundBox,
         lineThickness: number,
         lineStyle: Color,
         lineStroke:Color,
@@ -30,6 +34,25 @@ export class Rectangle extends ClosedFigure {
                 lineDash
             );
     }
+    get name(): string {
+        return Rectangle.className;
+    }
+    get _lineWidth(): number {
+        return this.lineThickness;
+    }
+
+    set _lineWidth( newTickness: number ) {
+        this.lineThickness = newTickness;
+    }
+
+    get _lineStyle(): string {
+        return this._lineStyle;
+    }
+
+    set _lineStyle( newStyle: string ) {
+        this._lineStyle = newStyle;
+    }
+
     protected doPaint(
         ctx: CanvasRenderingContext2D ): void {
 
@@ -48,3 +71,27 @@ export class Rectangle extends ClosedFigure {
 
     }
 }
+class RectangleFactory 
+    implements Factory {
+
+    create( 
+        json: any ): Rectangle {
+        return new Rectangle(new BoundBox(
+            { 
+                x: json.bbox.x, 
+                y: json.bbox.y
+            },
+            { 
+                w: json.bbox.w, 
+                h: json.bbox.h 
+            }),
+            1,json.LineStyle,json.LineStroke,json.color,[]
+        );
+    }
+}
+
+ApiService.getInstance()
+    .registerFactory(
+        Rectangle.className,
+        new RectangleFactory()
+    );

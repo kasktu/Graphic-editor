@@ -1,39 +1,50 @@
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-import { BoundBox } from '../model/bound-box';
 import { CreationTool } from './creation-tool';
 import { Ellipse } from '../model/ellipse';
-var EllipseCreationTool = /** @class */ (function (_super) {
-    __extends(EllipseCreationTool, _super);
-    function EllipseCreationTool() {
-        return _super !== null && _super.apply(this, arguments) || this;
+import { BoundBox } from '../model/bound-box';
+export class ElliCreationTool extends CreationTool {
+    getName() {
+        return 'EllipseCreationTool';
     }
-    // non-public members ------------------------------------
-    EllipseCreationTool.prototype.createFigure = function () {
-        return new Ellipse(new BoundBox({ x: this.evDown.clientX,
-            y: this.evDown.clientY }, { w: this.evUp.clientX - this.evDown.clientX,
-            h: this.evUp.clientY - this.evDown.clientY }), 1, {
-            r: 0, g: 0, b: 0, a: 255 // color ?
-        }, {
-            r: 0, g: 0, b: 0, a: 255 // color ?
-        }, {
-            r: 0, g: 0, b: 0, a: 255 // color ?
-        }, []);
-    };
-    return EllipseCreationTool;
-}(CreationTool));
-export { EllipseCreationTool };
+    showFeedback(ctx, ev) {
+        var x = ev.offsetX - this.evDown.clientX;
+        var y = ev.offsetY - this.evDown.offsetY;
+        ctx.beginPath();
+        ctx.ellipse(this.evDown.offsetX + (x / 2), this.evDown.offsetY + (y / 2), Math.abs(x / 2), Math.abs(y / 2), 0, 0, 2 * Math.PI);
+        ctx.stroke();
+    }
+    createFigure(fig) {
+        if (fig) {
+            return new Ellipse(new BoundBox({
+                x: this.evUp.offsetX,
+                y: this.evUp.offsetY
+            }, {
+                w: fig.w,
+                h: fig.h
+            }), 1, {
+                r: 0, g: 0, b: 0, a: 255 // color ?
+            }, {
+                r: 0, g: 0, b: 0, a: 255 // color ?
+            }, {
+                r: 0, g: 0, b: 0, a: 255 // color ?
+            }, []);
+        }
+        else {
+            var sizeY = this.evUp.offsetY - this.evDown.offsetY;
+            var sizeX = this.evUp.offsetX - this.evDown.offsetX;
+            return new Ellipse(new BoundBox({
+                x: this.evDown.offsetX,
+                y: this.evDown.offsetY
+            }, {
+                w: sizeX,
+                h: sizeY
+            }), 1, {
+                r: 0, g: 0, b: 0, a: 255 // color ?
+            }, {
+                r: 0, g: 0, b: 0, a: 255 // color ?
+            }, {
+                r: 0, g: 0, b: 0, a: 255 // color ?
+            }, []);
+        }
+    }
+}
 //# sourceMappingURL=ellipse-creation-tool.js.map

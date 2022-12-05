@@ -1,7 +1,5 @@
-var ColorHelper = /** @class */ (function () {
-    function ColorHelper() {
-    }
-    ColorHelper.colorAsString = function (color) {
+export class ColorHelper {
+    static colorAsString(color) {
         return 'rgba('
             + color.r
             + ','
@@ -11,8 +9,6 @@ var ColorHelper = /** @class */ (function () {
             + ','
             + (color.a / 255)
             + ')';
-    };
-    return ColorHelper;
-}());
-export { ColorHelper };
+    }
+}
 //# sourceMappingURL=color-helper.js.map

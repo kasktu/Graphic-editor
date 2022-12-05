@@ -1,27 +1,20 @@
-import { 
-    BoundBox, 
-} from '../../../Version_6/src/model/bound-box';
+import { BoundBox } from './bound-box';
 
-import { 
-    Color,
-    ColorHelper,
-} from '../../../Version_6/src/util/color-helper';
+import { Color } from '../util/color-helper';
 
-import { 
-    Figure,
-} from '../../../Version_6/src/model/figure';
 import { GeomFigure } from './geom-figure';
+import { Dimension, Position } from './graphics-object';
 
 export abstract class ClosedFigure extends GeomFigure{
+    
     constructor(
-        protected bbox: BoundBox,
+        protected bbox:BoundBox,
         protected lineThickness: number,
         protected lineStyle: Color,
         protected lineStroke:Color,
         protected fillColor: Color,
         protected lineDash:Array<number> ){
-            super(
-                bbox,
+            super(bbox,
                 lineThickness,
                 lineStyle,
                 lineStroke,

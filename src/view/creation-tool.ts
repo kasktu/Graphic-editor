@@ -2,17 +2,22 @@ import { Figure } from '../model/figure';
 import { Tool } from './tool';
 
 import app from '../index';
-
 export abstract class CreationTool
     extends Tool {
 
-    protected abstract createFigure(): Figure;
+    protected abstract createFigure(fig?:Figure): Figure;
     
     // Template Method
-    protected processMouseUp(): void {
+    protected processMouseUp(fig?:Figure): void {
+
+        // 0. no empty figures
+        var name=this.getName();
+        if (name!= 'TextCreationTool' && this.equal( this.evDown, this.evUp ) ) {
+            return;
+        }
 
         // 1. create figure
-        const f: Figure = this.createFigure();
+        const f: Figure = this.createFigure(fig);
 
         // 2. check figure
         if ( f ) {
@@ -20,6 +25,7 @@ export abstract class CreationTool
             app.addFigure(
                 f
             );
+            
         }
         else {
             console.error(
@@ -27,4 +33,5 @@ export abstract class CreationTool
             );
         }
     }
+
 }

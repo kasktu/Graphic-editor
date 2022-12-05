@@ -1,21 +1,26 @@
 import { BoundBox } from './bound-box';
 import { Color,ColorHelper } from '../util/color-helper';
-import { Figure } from './figure';
+import { Factory, Figure } from './figure';
+import { ApiService } from '../api/api-service';
 
 export class Text extends Figure{
+    static readonly className: string = 'Text';
+
 
     constructor(text:string,
-        bbox: BoundBox,       // NEW
-        LineStyle: Color,
-        LineStroke: Color ) {
-            super(
-                bbox,
-                LineStyle,
-                LineStroke
-            );
+        protected bbox:BoundBox,       // NEW
+        protected LineStyle: Color,
+        protected LineStroke: Color ) {
+        super(
+            bbox,
+            LineStyle,
+            LineStroke
+        );
             this._text=text;
     }
-
+    get name(): string {
+        return Text.className;
+    }
     get font(): string {
         return this._font;
     }
@@ -52,3 +57,31 @@ export class Text extends Figure{
     private _text: string=this.text;
     protected _selected: boolean = false;
 }
+
+class TextFactory 
+    implements Factory {
+
+    create( 
+        json: any ): Text {
+
+        return new Text(
+            json._text, new BoundBox(
+            { 
+                x: json.bbox.x, 
+                y: json.bbox.y
+            },
+            { 
+                w: json.bbox.w, 
+                h: json.bbox.h 
+            }),
+            json.LineStyle,json.LineStroke
+        );
+    }
+}
+
+ApiService.getInstance()
+    .registerFactory(
+        Text.className,
+        new TextFactory()
+    );
+

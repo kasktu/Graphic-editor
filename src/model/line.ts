@@ -1,5 +1,9 @@
+import {
+    ApiService,
+} from '../api/api-service';
+
 import { 
-    BoundBox, 
+    BoundBox,
 } from './bound-box';
 
 import { 
@@ -7,13 +11,18 @@ import {
     ColorHelper, 
 } from '../util/color-helper';
 
+import {
+    Factory
+} from './figure';
 import { GeomFigure } from './geom-figure';
 
 export class Line 
     extends GeomFigure {
 
+    static readonly className: string = 'Line';
+
     constructor(
-        bbox: BoundBox,
+        bbox:BoundBox,
         lineThickness: number,
         lineStyle: Color,
         lineStroke:Color,
@@ -27,7 +36,10 @@ export class Line
                 lineDash
             );
     }
-     
+        
+    get name(): string {
+        return Line.className;
+    }
     get _lineWidth(): number {
         return this.lineThickness;
     }
@@ -43,13 +55,14 @@ export class Line
     set _lineStyle( newStyle: string ) {
         this._lineStyle = newStyle;
     }
+
     protected doPaint(
         ctx: CanvasRenderingContext2D ): void {
 
         ctx.strokeStyle = ColorHelper.colorAsString(
             this.lineStroke
         );
-        ctx.lineWidth = this.lineThickness;
+
         ctx.beginPath();
         ctx.moveTo(
             this.bbox.x, 
@@ -62,3 +75,29 @@ export class Line
         ctx.stroke();
     }
 }
+
+class LineFactory 
+    implements Factory {
+
+    create( 
+        json: any ): Line {
+
+        return new Line( new BoundBox(
+            { 
+                x: json.bbox.position.x, 
+                y: json.bbox.position.y
+            },
+            { 
+                w: json.bbox.size.w, 
+                h: json.bbox.size.h 
+            }),
+            1,json.LineStyle,json.LineStroke,[]
+        );
+    }
+}
+
+ApiService.getInstance()
+    .registerFactory(
+        Line.className,
+        new LineFactory()
+    );
